@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>SKZOO 生日問答</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(180deg, #fff0f6, #fce7ff);
+      font-family: "Noto Sans TC", sans-serif;
+      overflow: hidden;
+    }
+
+    .question-box {
+      position: absolute;
+      top: 20%;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .options button {
+      margin: 10px;
+      padding: 12px 22px;
+      font-size: 16px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: #ff9acb;
+      color: white;
+      transition: transform 0.2s;
+    }
+
+    .options button:hover {
+      transform: scale(1.1);
+    }
+
+    .skzoo {
+      position: absolute;
+      bottom: -200px;
+      width: 120px;
+      pointer-events: none;
+      animation: fly 6s linear infinite, float 3s ease-in-out infinite;
+    }
+
+    @keyframes fly {
+      0% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateX(200px) translateY(-300px) rotate(180deg);
+      }
+      100% {
+        transform: translateX(-200px) translateY(-500px) rotate(360deg);
+      }
+    }
+
+    .hidden { display: none; }
+
+    .grouped {
+      animation: none !important;
+      position: absolute;
+      transition: all 0.8s ease;
+    }
+
+    #photoHint {
+      position: absolute;
+      bottom: 40px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="question-box">
+  <h1 id="question">請問（李畢）的生日是？</h1>
+  <div class="options">
+    <button onclick="answer(0)">10/15</button>
+    <button onclick="answer(1)">9/22</button>
+  </div>
+</div>
+
+<div id="photoHint">📸 點一下畫面拍照</div>
+
+<!-- SKZOO 圖片 -->
+<img src="images/leebit.png" class="skzoo hidden" id="skzoo-0" />
+<img src="images/dwaekki.png" class="skzoo hidden" id="skzoo-1" />
+<img src="images/quokka.png" class="skzoo hidden" id="skzoo-2" />
+<img src="images/jiniret.png" class="skzoo hidden" id="skzoo-3" />
+<img src="images/wolfchan.png" class="skzoo hidden" id="skzoo-4" />
+<img src="images/bbokari.png" class="skzoo hidden" id="skzoo-5" />
+<img src="images/puppym.png" class="skzoo hidden" id="skzoo-6" />
+
+<script>
+  const questions = [
+    { name: "李畢", correct: "10/25", options: ["10/25", "9/22"] },
+    { name: "豬兔", correct: "8/11", options: ["8/11", "3/27"] },
+    { name: "闊卡", correct: "9/14", options: ["9/14", "6/8"] },
+    { name: "小貂", correct: "3/20", options: ["3/20", "2/11"] },
+    { name: "沃夫鏟", correct: "10/3", options: ["10/3", "4/23"] },
+    { name: "波阿里", correct: "9/15", options: ["9/15", "9/23"] },
+    { name: "帕皮", correct: "9/22", options: ["9/22", "11/23"] }
+  ];
+
+  let index = 0;
+
+  function answer(choice) {
+    const q = questions[index];
+    const selected = q.options[choice];
+
+    if (selected === q.correct) {
+      document.getElementById(`skzoo-${index}`).classList.remove("hidden");
+      index++;
+      if (index < questions.length) {
+        loadQuestion();
+      } else {
+        showGroup();
+      }
+    } else {
+      alert("50% 的機率你也能答錯喔？超好笑 🤣");
+      resetAll();
+    }
+  }
+
+  function loadQuestion() {
+    const q = questions[index];
+    document.getElementById("question").innerText = `請問（${q.name}）的生日是？`;
+    const buttons = document.querySelectorAll(".options button");
+    buttons[0].innerText = q.options[0];
+    buttons[1].innerText = q.options[1];
+  }
+
+  function showGroup() {
+    const skzoos = document.querySelectorAll('.skzoo');
+    skzoos.forEach((zoo, i) => {
+      zoo.classList.remove('hidden');
+      zoo.classList.add('grouped');
+      zoo.style.left = `${20 + i * 10}%`;
+      zoo.style.bottom = '20%';
+    });
+    document.getElementById('photoHint').style.opacity = 1;
+  }
+
+  document.body.addEventListener('click', () => {
+    if (index >= questions.length) {
+      html2canvas(document.body).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'skzoo-photo.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  });
+
+  function resetAll() {
+    index = 0;
+    document.querySelectorAll('.skzoo').forEach(el => el.classList.add('hidden'));
+    loadQuestion();
+  }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+</body>
+</html>
